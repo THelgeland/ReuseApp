@@ -19,8 +19,10 @@ import java.io.IOException;
  *
  * @author Torkil Helgeland
  */
-//TODO: Refactor to control the camera object directly in this view and thereby improving its
+//TODO: Refactor to control the camera object directly in this view and use it to improve its
 //TODO: behaviour in the activity life cycle
+
+//TODO: Implement saving location data here when taking a picture, the camera should have permission
 public class UploadCameraActivity extends Activity {
     private CameraPreview cameraPreview;
 
@@ -63,7 +65,10 @@ public class UploadCameraActivity extends Activity {
                 Log.d("ReuseApp", "Something went wrong saving picture");
             }
             //After writing the image to disk, we start the image verification view
-            Intent intent = new Intent(UploadCameraActivity.this, VerifyPictureActivity.class);
+            //The code for starting new the next activity is here because takePicture
+            //is an asynchronous call.
+            Intent intent = new Intent(UploadCameraActivity.this,
+                    VerifyPictureActivity.class);
             startActivity(intent);
         }
     };

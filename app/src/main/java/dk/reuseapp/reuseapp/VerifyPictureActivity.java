@@ -1,10 +1,13 @@
 package dk.reuseapp.reuseapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.File;
@@ -31,5 +34,16 @@ public class VerifyPictureActivity extends Activity {
         else {
             Log.d("ReuseApp", "Couldn't find image file");
         }
+        //The flow here works quite nicely thanks to only allowing one photo, if the user goes back
+        //instead of clicking next, they simply get to overwrite the first image.
+        Button nextButton = findViewById(R.id.nextButton);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(VerifyPictureActivity.this,
+                        WritePostActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
