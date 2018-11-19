@@ -29,7 +29,7 @@ public class Util {
     }
 
     /**
-     * Method for getting the location of the image file
+     * Method for getting the upload post image file
      * @return the image File object
      */
     public static File getTempImageFile() {
@@ -40,6 +40,21 @@ public class Util {
             tempFolder.mkdirs();
         }
         File output = new File(tempFolder, "tempPicture.jpg");
+        return output;
+    }
+
+    /**
+     * Method for getting the location of the upload text file
+     * @return
+     */
+    public static File getTempTextFile() {
+
+        File tempFolder = new File(Environment.getExternalStorageDirectory() +
+                File.separator + "TEMP");
+        if (!tempFolder.exists()) {
+            tempFolder.mkdirs();
+        }
+        File output = new File(tempFolder, "tempText.txt");
         return output;
     }
 }

@@ -18,6 +18,7 @@
         android:inputType="textCapSentences|textMultiLine"
         android:maxLength="2000"/>
     <Button
+        android:id="@+id/postButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="POST"/>
