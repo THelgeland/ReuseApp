@@ -3,10 +3,13 @@ package dk.reuseapp.reuseapp;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Display;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -19,9 +22,11 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     private Camera camera;
     private List<Camera.Size> supportedPreviewSizes;
     private Camera.Size previewSize;
+    private Context context;
 
     public CameraPreview(Context context) {
         super(context);
+        this.context = context;
 
         surfaceView = new SurfaceView(context);
         addView(surfaceView);
@@ -91,10 +96,19 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        camera.stopPreview();
         Camera.Parameters parameters = camera.getParameters();
         parameters.setPreviewSize(previewSize.width, previewSize.height);
+        try {
+            camera.setPreviewDisplay(holder);
+        }
+        catch (IOException ioe) {
+            Log.d("ReuseApp", "Something went wrong setting display holder");
+        }
         requestLayout();
         camera.setParameters(parameters);
+
+        setCameraDisplayOrientation(camera);
 
         camera.startPreview();
     }
@@ -128,5 +142,40 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
                 child.layout(0, (heigth-scaledHeigth)/2,width,(heigth+scaledHeigth)/2);
             }
         }
+    }
+    public void setCameraDisplayOrientation(android.hardware.Camera camera) {
+        Camera.Parameters parameters = camera.getParameters();
+
+        android.hardware.Camera.CameraInfo camInfo =
+                new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(0, camInfo);
+
+
+        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int rotation = display.getRotation();
+        int degrees = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                degrees = 0;
+                break;
+            case Surface.ROTATION_90:
+                degrees = 90;
+                break;
+            case Surface.ROTATION_180:
+                degrees = 180;
+                break;
+            case Surface.ROTATION_270:
+                degrees = 270;
+                break;
+        }
+
+        int result;
+        if (camInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (camInfo.orientation + degrees) % 360;
+            result = (360 - result) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = (camInfo.orientation - degrees + 360) % 360;
+        }
+        camera.setDisplayOrientation(result);
     }
 }
