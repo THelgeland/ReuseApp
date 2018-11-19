@@ -7,6 +7,12 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+/**
+ * This is the main activity that users enter when opening the app, it has two buttons
+ * one for each high level action
+ *
+ * @author Torkil Helgeland
+ */
 public class MainActivity extends Activity {
     private ImageButton searchButton;
     private ImageButton uploadButton;
@@ -19,6 +25,7 @@ public class MainActivity extends Activity {
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Clicking the search button starts the search activity
                 Intent intent = new Intent(MainActivity.this, SearchActivity.class);
                 startActivity(intent);
             }
@@ -27,6 +34,7 @@ public class MainActivity extends Activity {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Clicking the upload button starts the upload activity
                 Intent intent = new Intent(MainActivity.this, UploadCameraActivity.class);
                 startActivity(intent);
             }

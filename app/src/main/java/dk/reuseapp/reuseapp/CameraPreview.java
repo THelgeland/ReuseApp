@@ -15,7 +15,14 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
 
-
+/**
+ * This is the camera preview View. It implements all the methods necessary for
+ * drawing the camera preview. It also controls the camera object. It's based on the official
+ * "Building a camera app" guide and uses the android.hardware.Camera to work with API 19.
+ * /TODO: Go over the complex methods and make sure there are no redundant calls, also fix orientation.
+ *
+ * @author Torkil Helgeland
+ */
 public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     private SurfaceHolder holder;
     private SurfaceView surfaceView;
@@ -143,9 +150,9 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
             }
         }
     }
-    public void setCameraDisplayOrientation(android.hardware.Camera camera) {
-        Camera.Parameters parameters = camera.getParameters();
 
+    //TODO: This method doesn't work properly.
+    public void setCameraDisplayOrientation(android.hardware.Camera camera) {
         android.hardware.Camera.CameraInfo camInfo =
                 new android.hardware.Camera.CameraInfo();
         android.hardware.Camera.getCameraInfo(0, camInfo);
@@ -169,13 +176,13 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
                 break;
         }
 
-        int result;
+        int orientation;
         if (camInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            result = (camInfo.orientation + degrees) % 360;
-            result = (360 - result) % 360;  // compensate the mirror
-        } else {  // back-facing
-            result = (camInfo.orientation - degrees + 360) % 360;
+            orientation = (camInfo.orientation + degrees) % 360;
+            orientation = (360 - orientation) % 360;
+        } else {
+            orientation = (camInfo.orientation - degrees + 360) % 360;
         }
-        camera.setDisplayOrientation(result);
+        camera.setDisplayOrientation(orientation);
     }
 }

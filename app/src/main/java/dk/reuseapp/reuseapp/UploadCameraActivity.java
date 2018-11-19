@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -14,12 +13,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+/**
+ * This is the in app camera activity. It's a bare bone camera interface with a camera preview
+ * and a capture button.
+ *
+ * @author Torkil Helgeland
+ */
+//TODO: Refactor to control the camera object directly in this view and thereby improving its
+//TODO: behaviour in the activity life cycle
 public class UploadCameraActivity extends Activity {
     private CameraPreview cameraPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setContentView(R.layout.activity_uploadcamera);
+        //We initialize the camera view and add it to the layout
         cameraPreview = new CameraPreview(this);
 
         cameraPreview.startCamera(Util.getCamera(0));
@@ -27,10 +35,13 @@ public class UploadCameraActivity extends Activity {
         preview.addView(cameraPreview);
         super.onCreate(savedInstanceState);
 
+
         ImageButton captureButton = findViewById(R.id.button_capture);
         captureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //This architecture is slightly confusing, the real magic happens in the
+                //callback function further down.
                 cameraPreview.takePicture(pictureCallBack);
             }
         });
@@ -39,7 +50,9 @@ public class UploadCameraActivity extends Activity {
     private Camera.PictureCallback pictureCallBack = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            File pictureFile = Util.getOutPutMediaFile();
+            //When the capture button is clicked, the data stream from the camera is written to a
+            //temporary file on disk
+            File pictureFile = Util.getTempImageFile();
             try {
                 FileOutputStream fileOutputStream = new FileOutputStream(pictureFile);
                 fileOutputStream.write(data);
@@ -49,9 +62,8 @@ public class UploadCameraActivity extends Activity {
                 ioe.printStackTrace();
                 Log.d("ReuseApp", "Something went wrong saving picture");
             }
-            cameraPreview.stopPreview();
-            Intent intent = new Intent(UploadCameraActivity.this,
-                    VerifyPictureActivity.class);
+            //After writing the image to disk, we start the image verification view
+            Intent intent = new Intent(UploadCameraActivity.this, VerifyPictureActivity.class);
             startActivity(intent);
         }
     };

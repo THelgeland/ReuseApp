@@ -5,7 +5,18 @@ import android.os.Environment;
 
 import java.io.File;
 
+/**
+ * Utility file for providing static methods that are to be used in several different classes.
+ *
+ * @author Torkil Helgeland
+ */
 public class Util {
+    /**
+     * Opens a camera
+     * @param id an id specifying which camera to use - we always use the back camera 0, but using
+     *           this method instead of the argument-less one is apparently best practice for API 19
+     * @return the Camera object
+     */
     public static Camera getCamera(int id) {
         Camera camera = null;
         try {
@@ -17,7 +28,11 @@ public class Util {
         return camera;
     }
 
-    public static File getOutPutMediaFile() {
+    /**
+     * Method for getting the location of the image file
+     * @return the image File object
+     */
+    public static File getTempImageFile() {
 
         File tempFolder = new File(Environment.getExternalStorageDirectory() +
                 File.separator + "TEMP");
