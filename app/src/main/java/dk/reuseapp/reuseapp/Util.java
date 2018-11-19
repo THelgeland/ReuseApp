@@ -9,6 +9,7 @@ import java.io.File;
  * Utility file for providing static methods that are to be used in several different classes.
  *
  * @author Torkil Helgeland
+ * @author Henrik Tran
  */
 public class Util {
     /**
