@@ -30,8 +30,14 @@
         android:roundIcon="@drawable/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".SearchActivity" />
+        <activity
+            android:name=".UploadCameraActivity"
+            android:label="@string/app_name">
         </activity>
+        <activity android:name=".VerifyPictureActivity" />
+        <activity android:name=".WritePostActivity" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login">
@@ -41,18 +47,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SearchActivity" />
-        <activity
-            android:name=".UploadCameraActivity"
-            android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".VerifyPictureActivity" />
-        <activity android:name=".WritePostActivity" />
     </application>
 
 </manifest>

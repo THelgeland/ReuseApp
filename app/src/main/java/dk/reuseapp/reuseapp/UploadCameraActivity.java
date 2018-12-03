@@ -44,7 +44,10 @@ public class UploadCameraActivity extends Activity {
             public void onClick(View v) {
                 //This architecture is slightly confusing, the real magic happens in the
                 //callback function further down.
-                cameraPreview.takePicture(pictureCallBack);
+                //cameraPreview.takePicture(pictureCallBack);
+                Intent intent = new Intent(UploadCameraActivity.this,
+                        VerifyPictureActivity.class);
+                startActivity(intent);
             }
         });
     }

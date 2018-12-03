@@ -4,6 +4,9 @@
     <string name="description_hint">Write a Description...</string>
     <string name="title_activity_login">Sign in</string>
     <!-- Strings related to login -->
+    <string name="checkbox">dk.reuseapp.reuseapp.checkbox</string>
+    <string name="name">dk.reuseapp.reuseapp.name</string>
+    <string name="email">dk.reuseapp.reuseapp.email</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="action_sign_in">Sign in or register</string>

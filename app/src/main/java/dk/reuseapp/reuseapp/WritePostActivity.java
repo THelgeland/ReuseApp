@@ -1,16 +1,33 @@
 package dk.reuseapp.reuseapp;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * This activity is for writing a title and description for the post.
@@ -22,11 +39,14 @@ import java.io.IOException;
 
 //TODO: Modify the back stack when pressing 'Post'
 public class WritePostActivity extends Activity {
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private DatabaseReference fdatabase;
 
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_write_post);
+        fdatabase=FirebaseDatabase.getInstance().getReference();
 
         final EditText title = findViewById(R.id.title_field);
         final EditText description = findViewById(R.id.description_field);
@@ -39,6 +59,11 @@ public class WritePostActivity extends Activity {
                     Toast.makeText(WritePostActivity.this,
                             "Please write a title before posting", Toast.LENGTH_LONG).show();
                 } else {
+
+                    upload(description.getText().toString(), title.getText().toString());
+
+
+                    /*
                     File textFile = Util.getTempTextFile();
                     try {
                         BufferedWriter bf = new BufferedWriter(new FileWriter(textFile));
@@ -46,6 +71,48 @@ public class WritePostActivity extends Activity {
                     } catch (IOException ioe) {
                         ioe.printStackTrace();
                     }
+                    */
+                }
+            }
+        });
+    }
+    // https://stackoverflow.com/questions/50467814/tasksnapshot-getdownloadurl-is-deprecated
+    public void upload(final String text, final String title){
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final String name = prefs.getString(getString(R.string.name), "anonymous");
+        final String email = prefs.getString(getString(R.string.email), "No email");
+
+        Bitmap img = BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.ic_launcher);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        img.compress(Bitmap.CompressFormat.PNG,100,baos);
+        byte[] data = baos.toByteArray();
+
+        String path = "img" + UUID.randomUUID() + ".png";
+        final StorageReference ref = storage.getReference().child(path);
+        UploadTask uploadTask = ref.putBytes(data);
+
+        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                if (!task.isSuccessful()) {
+                    throw task.getException();
+                }
+
+                // Continue with the task to get the download URL
+                return ref.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task) {
+                if (task.isSuccessful()) {
+                    Uri downloadUri = task.getResult();
+                    String downloadURL = downloadUri.toString();
+                    PostInfo testPost = new PostInfo(name, email, "testLocation", text, downloadURL, title);
+                    fdatabase.child("Posts").child(System.currentTimeMillis() + "").setValue(testPost);
+                } else {
+                    // Handle failures
+                    // ...
                 }
             }
         });
