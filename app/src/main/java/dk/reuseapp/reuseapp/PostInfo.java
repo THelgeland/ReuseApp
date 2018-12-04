@@ -7,43 +7,22 @@ import com.google.firebase.storage.StorageReference;
 
 
 /**
- * This is the java post class which contains informations regarding a post.
+ * This is the java post class which contains information regarding a post.
  *
  *
  * @author Henrik Tran
  */
 public class PostInfo {
-    //private FirebaseDatabase storage = FirebaseStorage.getInstance();
-    private String name;
-    private String email;
     private String location;
-    private String text;
+    private String description;
     private String picture;
     private String title;
 
-    public PostInfo(String name,String email, String location, String text, String picture,String title){
-        this.name=name;
-        this.email=email;
+    public PostInfo(String title, String description, String location, String picture){
         this.location=location;
-        this.text= text;
+        this.description= description;
         this.picture= picture;
         this.title = title;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getLocation() {
@@ -54,12 +33,12 @@ public class PostInfo {
         this.location = location;
     }
 
-    public String getText() {
-        return text;
+    public String getDescription() {
+        return description;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getPicture() {
