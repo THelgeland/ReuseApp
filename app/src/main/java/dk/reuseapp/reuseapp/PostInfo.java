@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @author Henrik Tran
  */
-public class PostInfo {
+public class PostInfo implements Comparable {
     //private FirebaseDatabase storage = FirebaseStorage.getInstance();
     public String location;
     public String description;
@@ -83,5 +83,16 @@ public class PostInfo {
         result.put("picture", picture);
         result.put("title", title);
         return result;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        PostInfo other = (PostInfo) o;
+        if (id > other.id) {
+            return -1;
+        }
+        else {
+            return 1;
+        }
     }
 }

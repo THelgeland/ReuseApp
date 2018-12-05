@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -16,41 +17,53 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class SearchActivity extends Activity {
     private ArrayList<PostInfo> postInfoArrayList;
+    private ArrayList<PostInfo> postsForView;
     private DatabaseReference fdatabase;
     private RecyclerViewAdapter recyclerViewAdapter;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private SearchView searchView;
+    private String searchFilter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         fdatabase = FirebaseDatabase.getInstance().getReference().child("Post");
+        final SearchView searchView = findViewById(R.id.searchView);
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchFilter = searchView.getQuery().toString();
+                applyFilter();
+            }
+        });
+
+        searchFilter = null;
         postInfoArrayList = new ArrayList();
+        postsForView = new ArrayList<>();
         getAllPosts();
     }
-
 
     public void getAllPosts(){
         fdatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                System.out.println("1");
                 PostInfo postInfo = dataSnapshot.getValue(PostInfo.class);
                 postInfo.id = Long.parseLong(dataSnapshot.getKey());
                 if(!postInfoArrayList.contains(postInfo)){
                     postInfoArrayList.add(postInfo);
-                    recyclerViewAdapter.notifyItemInserted(0);
+                    addPostForView(postInfo, true);
+                    //recyclerViewAdapter.notifyItemInserted(0);
                 }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                System.out.println("2");
 
             }
 
@@ -66,11 +79,43 @@ public class SearchActivity extends Activity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                System.out.println(databaseError);
-
+                Toast.makeText(SearchActivity.this, databaseError.getMessage(),
+                        Toast.LENGTH_LONG).show();
             }
         });
         setUpRecyclerView();
+    }
+
+    private void applyFilter() {
+        //If there is no real search query we simply reset.
+        int previousSize = postsForView.size();
+        if (searchFilter == null || searchFilter.equals("") || searchFilter.trim().equals("")) {
+            postsForView = postInfoArrayList;
+        }
+        else {
+            postsForView = new ArrayList<>();
+            for (PostInfo p : postInfoArrayList) {
+                if (p.getTitle().contains(searchFilter)) {
+                    addPostForView(p, false);
+                }
+            }
+        }
+        Collections.sort(postsForView);
+        recyclerViewAdapter.notifyItemRangeChanged(0, previousSize-1);
+        if (postsForView.size() > previousSize-1) {
+            recyclerViewAdapter.notifyItemRangeInserted(previousSize,
+                    postsForView.size()-1);
+        }
+    }
+
+    private void addPostForView(PostInfo post, boolean sort) {
+        if (searchFilter == null || post.getTitle().contains(searchFilter)) {
+            postsForView.add(post);
+            if (sort) {
+                Collections.sort(postsForView);
+            }
+            recyclerViewAdapter.notifyItemInserted(postsForView.indexOf(post));
+        }
     }
 
     public void setUpRecyclerView(){
@@ -79,7 +124,7 @@ public class SearchActivity extends Activity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        recyclerViewAdapter = new RecyclerViewAdapter(postInfoArrayList,this);
+        recyclerViewAdapter = new RecyclerViewAdapter(postsForView,this);
         recyclerView.setAdapter(recyclerViewAdapter);
     }
 }

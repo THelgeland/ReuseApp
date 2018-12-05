@@ -34,7 +34,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
     @NonNull
     @Override
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        System.out.println("go");
         return new RecyclerViewHolder(LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.recycler_item, viewGroup, false));
     }
@@ -42,7 +41,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
     @Override
     public void onBindViewHolder(@NonNull final RecyclerViewHolder recyclerViewHolder, int i) {
         PostInfo postInfo = postInfoArrayList.get(i);
-        System.out.println("Title: " + postInfo.title);
         recyclerViewHolder.description.setText(postInfo.getDescription());
         recyclerViewHolder.date.setText(postInfo.getDate());
 
