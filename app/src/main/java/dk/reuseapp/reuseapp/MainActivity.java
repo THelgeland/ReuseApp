@@ -58,7 +58,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //Clicking the upload button starts the upload activity
-                Intent intent = new Intent(MainActivity.this, UploadCameraActivity.class);
+                Intent intent = new Intent(MainActivity.this, WritePostActivity.class);
                 startActivity(intent);
             }
         });

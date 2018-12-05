@@ -1,21 +1,27 @@
 package dk.reuseapp.reuseapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -42,12 +48,16 @@ import java.util.UUID;
 public class WritePostActivity extends Activity {
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private DatabaseReference fdatabase;
+    private FirebaseAuth fauth;
+    private Bitmap image;
 
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_write_post);
+        startTakePictureIntent();
         fdatabase=FirebaseDatabase.getInstance().getReference();
+        fauth = FirebaseAuth.getInstance();
 
         final EditText title = findViewById(R.id.title_field);
         final EditText description = findViewById(R.id.description_field);
@@ -62,28 +72,48 @@ public class WritePostActivity extends Activity {
                 } else {
 
                     upload(description.getText().toString(), title.getText().toString());
-
-
-                    /*
-                    File textFile = Util.getTempTextFile();
-                    try {
-                        BufferedWriter bf = new BufferedWriter(new FileWriter(textFile));
-                        bf.write(title.getText().toString());
-                    } catch (IOException ioe) {
-                        ioe.printStackTrace();
-                    }
-                    */
                 }
             }
         });
     }
-    // https://stackoverflow.com/questions/50467814/tasksnapshot-getdownloadurl-is-deprecated
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser user = fauth.getCurrentUser();
+        if (user == null) {
+            fauth.signInAnonymously().addOnCompleteListener(this,
+                    new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(WritePostActivity.this,
+                                "Database Authentication Failed", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == 1) {
+            Bundle extras = data.getExtras();
+            image = (Bitmap) extras.get("data");
+        }
+    }
+
+    private void startTakePictureIntent() {
+        Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (pictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(pictureIntent, 1);
+        }
+    }
+
     public void upload(final String text, final String title){
 
-
-        Bitmap img = BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.common_full_open_on_phone);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        img.compress(Bitmap.CompressFormat.PNG,100,baos);
+        image.compress(Bitmap.CompressFormat.PNG,100,baos);
         byte[] data = baos.toByteArray();
 
         String path = "img" + UUID.randomUUID() + ".png";
