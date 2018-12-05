@@ -1,9 +1,14 @@
 package dk.reuseapp.reuseapp;
 
+import com.google.android.gms.common.api.Api;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -14,37 +19,24 @@ import com.google.firebase.storage.StorageReference;
  */
 public class PostInfo {
     //private FirebaseDatabase storage = FirebaseStorage.getInstance();
-    private String name;
-    private String email;
-    private String location;
-    private String text;
-    private String picture;
-    private String title;
+    public String location;
+    public String description;
+    public String picture;
+    public String title;
+    public String date;
 
-    public PostInfo(String name,String email, String location, String text, String picture,String title){
-        this.name=name;
-        this.email=email;
+    public PostInfo(String location, String description, String picture,String title,String date){
         this.location=location;
-        this.text= text;
+        this.description = description;
         this.picture= picture;
         this.title = title;
+        this.date= date;
     }
 
-    public String getName() {
-        return name;
+    public PostInfo(){
+
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
     public String getLocation() {
         return location;
@@ -54,12 +46,12 @@ public class PostInfo {
         this.location = location;
     }
 
-    public String getText() {
-        return text;
+    public String getDescription() {
+        return description;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getPicture() {
@@ -76,5 +68,19 @@ public class PostInfo {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+    public String getDate(){
+        return date;
+    }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("description", description);
+        result.put("date", date);
+        result.put("location", location);
+        result.put("picture", picture);
+        result.put("title", title);
+        return result;
     }
 }

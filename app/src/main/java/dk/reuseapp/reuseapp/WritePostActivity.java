@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -79,11 +80,8 @@ public class WritePostActivity extends Activity {
     // https://stackoverflow.com/questions/50467814/tasksnapshot-getdownloadurl-is-deprecated
     public void upload(final String text, final String title){
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        final String name = prefs.getString(getString(R.string.name), "anonymous");
-        final String email = prefs.getString(getString(R.string.email), "No email");
 
-        Bitmap img = BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.ic_launcher);
+        Bitmap img = BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.common_full_open_on_phone);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         img.compress(Bitmap.CompressFormat.PNG,100,baos);
         byte[] data = baos.toByteArray();
@@ -108,8 +106,9 @@ public class WritePostActivity extends Activity {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
                     String downloadURL = downloadUri.toString();
-                    PostInfo testPost = new PostInfo(name, email, "testLocation", text, downloadURL, title);
-                    fdatabase.child("Posts").child(System.currentTimeMillis() + "").setValue(testPost);
+                    PostInfo testPost = new PostInfo("testdate", text, downloadURL, title, "testdate");
+                    Map<String, Object> postValues = testPost.toMap();
+                    fdatabase.child("Post").child(System.currentTimeMillis() + "").updateChildren(postValues);
                 } else {
                     // Handle failures
                     // ...
