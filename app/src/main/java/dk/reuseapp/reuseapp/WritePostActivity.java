@@ -33,6 +33,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.SQLOutput;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
@@ -109,7 +113,13 @@ public class WritePostActivity extends Activity {
             startActivityForResult(pictureIntent, 1);
         }
     }
-
+    public String getDate(){
+        Date c = Calendar.getInstance().getTime();
+        System.out.println("Current date"+c);
+        SimpleDateFormat df= new SimpleDateFormat("dd/MM/yyyy");
+        String formattedDate=df.format(c);
+        return formattedDate;
+    }
     public void upload(final String text, final String title){
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -136,7 +146,7 @@ public class WritePostActivity extends Activity {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
                     String downloadURL = downloadUri.toString();
-                    PostInfo testPost = new PostInfo("testdate", text, downloadURL, title, "testdate");
+                    PostInfo testPost = new PostInfo("testdate", text, downloadURL, title, getDate());
                     Map<String, Object> postValues = testPost.toMap();
                     fdatabase.child("Post").child(System.currentTimeMillis() + "").updateChildren(postValues);
                 } else {
