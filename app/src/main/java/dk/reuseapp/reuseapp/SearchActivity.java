@@ -37,6 +37,7 @@ public class SearchActivity extends Activity {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 System.out.println("1");
                 PostInfo postInfo = dataSnapshot.getValue(PostInfo.class);
+                postInfo.id = Long.getLong(dataSnapshot.getKey());
                 System.out.println(postInfo.description);
                 if(!postInfoArrayList.contains(postInfo)){
                     postInfoArrayList.add(postInfo);

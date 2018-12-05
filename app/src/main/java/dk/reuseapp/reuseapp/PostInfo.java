@@ -24,6 +24,7 @@ public class PostInfo {
     public String picture;
     public String title;
     public String date;
+    public long id;
 
     public PostInfo(String location, String description, String picture,String title,String date){
         this.location=location;
@@ -81,6 +82,7 @@ public class PostInfo {
         result.put("location", location);
         result.put("picture", picture);
         result.put("title", title);
+        result.put("id", id);
         return result;
     }
 }
