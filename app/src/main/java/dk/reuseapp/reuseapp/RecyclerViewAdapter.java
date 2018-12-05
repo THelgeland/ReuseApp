@@ -51,8 +51,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(SearchActivity.this, SearchActivity.class);
-                startActivity(intent);
+                //Intent intent = new Intent(SearchActivity.this, SearchActivity.class);
+                //startActivity(intent);
             }
         });
     }
@@ -76,7 +76,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
             date=view.findViewById(R.id.dateid);
             picture=view.findViewById(R.id.pictureID);
             title=view.findViewById(R.id.titleid);
-            postcontainer=.view.findViewById(R.id.postcontainer);
+            postcontainer=view.findViewById(R.id.postcontainer);
 
 
         }
