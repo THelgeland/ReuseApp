@@ -1,23 +1,31 @@
 package dk.reuseapp.reuseapp;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -54,6 +62,7 @@ public class WritePostActivity extends Activity {
     private DatabaseReference fdatabase;
     private FirebaseAuth fauth;
     private Bitmap image;
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -62,6 +71,7 @@ public class WritePostActivity extends Activity {
         startTakePictureIntent();
         fdatabase=FirebaseDatabase.getInstance().getReference();
         fauth = FirebaseAuth.getInstance();
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         final EditText title = findViewById(R.id.title_field);
         final EditText description = findViewById(R.id.description_field);
@@ -121,6 +131,20 @@ public class WritePostActivity extends Activity {
         return formattedDate;
     }
     public void upload(final String text, final String title){
+        final String[] locationString = new String[1];
+        if (ContextCompat.checkSelfPermission(WritePostActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 225);
+        }
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    locationString[0] = location.getLatitude() + ";" + location.getLongitude();
+                }
+            }
+        });
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG,100,baos);
@@ -146,12 +170,11 @@ public class WritePostActivity extends Activity {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
                     String downloadURL = downloadUri.toString();
-                    PostInfo testPost = new PostInfo("testdate", text, downloadURL, title, getDate());
+                    PostInfo testPost = new PostInfo(locationString[0], text, downloadURL, title, getDate());
                     Map<String, Object> postValues = testPost.toMap();
                     fdatabase.child("Post").child(System.currentTimeMillis() + "").updateChildren(postValues);
                 } else {
-                    // Handle failures
-                    // ...
+                    // Handle errors
                 }
             }
         });
