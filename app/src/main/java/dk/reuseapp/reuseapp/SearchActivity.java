@@ -6,6 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.view.View;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -21,6 +23,7 @@ public class SearchActivity extends Activity {
     private RecyclerViewAdapter recyclerViewAdapter;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +32,16 @@ public class SearchActivity extends Activity {
         fdatabase = FirebaseDatabase.getInstance().getReference().child("Post");
         postInfoArrayList = new ArrayList();
         getAllPosts();
-
     }
+
+
     public void getAllPosts(){
         fdatabase.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 System.out.println("1");
                 PostInfo postInfo = dataSnapshot.getValue(PostInfo.class);
-                postInfo.id = Long.getLong(dataSnapshot.getKey());
-                System.out.println(postInfo.description);
+                postInfo.id = Long.parseLong(dataSnapshot.getKey());
                 if(!postInfoArrayList.contains(postInfo)){
                     postInfoArrayList.add(postInfo);
                     recyclerViewAdapter.notifyItemInserted(0);

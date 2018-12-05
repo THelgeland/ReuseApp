@@ -82,7 +82,6 @@ public class PostInfo {
         result.put("location", location);
         result.put("picture", picture);
         result.put("title", title);
-        result.put("id", id);
         return result;
     }
 }
