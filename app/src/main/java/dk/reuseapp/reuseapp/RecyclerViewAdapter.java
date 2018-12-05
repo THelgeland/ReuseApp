@@ -1,13 +1,17 @@
 package dk.reuseapp.reuseapp;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -36,7 +40,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerViewHolder recyclerViewHolder, int i) {
+    public void onBindViewHolder(@NonNull final RecyclerViewHolder recyclerViewHolder, int i) {
         PostInfo postInfo = postInfoArrayList.get(i);
         System.out.println("Title: " + postInfo.title);
         recyclerViewHolder.description.setText(postInfo.getDescription());
@@ -50,9 +54,33 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
         recyclerViewHolder.postcontainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final Dialog nagDialog = new Dialog(context,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                nagDialog.setCancelable((false));
+                nagDialog.setContentView(R.layout.post_container);
 
-                Intent intent = new Intent(SearchActivity.this, SearchActivity.class);
-                startActivity(intent);
+                ImageView nagDialogImageView = nagDialog.findViewById(R.id.picturecontainerID);
+                TextView nagDialogTextView = nagDialog.findViewById(R.id.postcontainerDescriptionID);
+
+                nagDialogImageView.setImageDrawable(recyclerViewHolder.picture.getDrawable());
+                nagDialogTextView.setText(recyclerViewHolder.description.getText());
+                nagDialog.show();
+
+                nagDialog.setOnKeyListener(new Dialog.OnKeyListener() {
+
+                    @Override
+                    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+
+                        if (keyCode == KeyEvent.KEYCODE_BACK) {
+                            nagDialog.dismiss();
+                        }
+                        return true;
+                    }
+                });
+
+
+
+
             }
         });
     }
@@ -76,7 +104,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
             date=view.findViewById(R.id.dateid);
             picture=view.findViewById(R.id.pictureID);
             title=view.findViewById(R.id.titleid);
-            postcontainer=.view.findViewById(R.id.postcontainer);
+            postcontainer=view.findViewById(R.id.postcontainer);
 
 
         }
