@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
+import android.widget.SearchView;
 import android.view.View;
 import android.widget.Toast;
 
@@ -35,11 +35,18 @@ public class SearchActivity extends Activity {
         setContentView(R.layout.activity_search);
         fdatabase = FirebaseDatabase.getInstance().getReference().child("Post");
         final SearchView searchView = findViewById(R.id.searchView);
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onClick(View v) {
-                searchFilter = searchView.getQuery().toString();
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                System.out.println(newText);
+                searchFilter = newText;
                 applyFilter();
+                return false;
             }
         });
 
@@ -93,24 +100,36 @@ public class SearchActivity extends Activity {
             postsForView = postInfoArrayList;
         }
         else {
-            postsForView = new ArrayList<>();
+            ArrayList<PostInfo> newList = new ArrayList<>();
             for (PostInfo p : postInfoArrayList) {
                 if (p.getTitle().contains(searchFilter)) {
-                    addPostForView(p, false);
+                    newList.add(p);
                 }
             }
+            postsForView.clear();
+            postsForView.addAll(newList);
         }
         Collections.sort(postsForView);
-        recyclerViewAdapter.notifyItemRangeChanged(0, previousSize-1);
-        if (postsForView.size() > previousSize-1) {
-            recyclerViewAdapter.notifyItemRangeInserted(previousSize,
-                    postsForView.size()-1);
-        }
+//        if (postsForView.size() < previousSize) {
+//            recyclerViewAdapter.notifyItemRangeChanged(0,
+//                    postsForView.size() - 1);
+//            recyclerViewAdapter.notifyItemRangeRemoved(postsForView.size(),
+//                    previousSize - 1);
+//        }
+//        else {
+//            recyclerViewAdapter.notifyItemRangeChanged(0, previousSize - 1);
+//        }
+//        if (postsForView.size() > previousSize) {
+//            recyclerViewAdapter.notifyItemRangeInserted(previousSize,
+//                    postsForView.size()-1);
+//        }
+        recyclerViewAdapter.notifyDataSetChanged();
     }
 
     private void addPostForView(PostInfo post, boolean sort) {
         if (searchFilter == null || post.getTitle().contains(searchFilter)) {
             postsForView.add(post);
+            System.out.println("Got to here");
             if (sort) {
                 Collections.sort(postsForView);
             }
