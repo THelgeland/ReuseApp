@@ -6,8 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
@@ -26,8 +29,9 @@ public class SearchActivity extends Activity {
     private RecyclerViewAdapter recyclerViewAdapter;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private SearchView searchView;
     private String searchFilter;
+    private SeekBar geoSlider;
+    private TextView maxDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,22 +42,59 @@ public class SearchActivity extends Activity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                /*searchFilter = query;
+                applyFilter();*/
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                System.out.println(newText);
                 searchFilter = newText;
                 applyFilter();
                 return false;
             }
         });
+        /*int searchCloseButtonId = searchView.getContext().getResources()
+                .getIdentifier("android:id/search_close_btn", null, null);
+        ImageView closeButton = searchView.findViewById(searchCloseButtonId);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView.setQuery("",true);
+            }
+        });*/
 
         searchFilter = null;
         postInfoArrayList = new ArrayList();
         postsForView = new ArrayList<>();
         getAllPosts();
+
+        maxDistance = findViewById(R.id.distanceView);
+        setDistanceView(0);
+        geoSlider = findViewById(R.id.slider);
+        geoSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                setDistanceView(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                ;
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                ;
+            }
+        });
+    }
+
+    private void setDistanceView(int progress) {
+        double max = 0.5 + 0.5 * progress;
+        String distance = max + " km";
+        maxDistance.setText(distance);
+        applyDistanceFilter(max);
     }
 
     public void getAllPosts(){
@@ -64,6 +105,7 @@ public class SearchActivity extends Activity {
                 postInfo.id = Long.parseLong(dataSnapshot.getKey());
                 if(!postInfoArrayList.contains(postInfo)){
                     postInfoArrayList.add(postInfo);
+                    Collections.sort(postInfoArrayList);
                     addPostForView(postInfo, true);
                     //recyclerViewAdapter.notifyItemInserted(0);
                 }
@@ -93,11 +135,16 @@ public class SearchActivity extends Activity {
         setUpRecyclerView();
     }
 
+    private void applyDistanceFilter(double distance) {
+        ;
+    }
+
     private void applyFilter() {
         //If there is no real search query we simply reset.
         int previousSize = postsForView.size();
         if (searchFilter == null || searchFilter.equals("") || searchFilter.trim().equals("")) {
-            postsForView = postInfoArrayList;
+            postsForView.clear();
+            postsForView.addAll(postInfoArrayList);
         }
         else {
             ArrayList<PostInfo> newList = new ArrayList<>();
@@ -108,8 +155,8 @@ public class SearchActivity extends Activity {
             }
             postsForView.clear();
             postsForView.addAll(newList);
+            Collections.sort(postsForView);
         }
-        Collections.sort(postsForView);
 //        if (postsForView.size() < previousSize) {
 //            recyclerViewAdapter.notifyItemRangeChanged(0,
 //                    postsForView.size() - 1);
@@ -129,7 +176,6 @@ public class SearchActivity extends Activity {
     private void addPostForView(PostInfo post, boolean sort) {
         if (searchFilter == null || post.getTitle().contains(searchFilter)) {
             postsForView.add(post);
-            System.out.println("Got to here");
             if (sort) {
                 Collections.sort(postsForView);
             }
