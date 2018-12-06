@@ -43,12 +43,12 @@ public class SearchActivity extends Activity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                System.out.println(newText);
                 searchFilter = newText;
                 applyFilter();
                 return false;
             }
         });
-
 
         searchFilter = null;
         postInfoArrayList = new ArrayList();
@@ -100,24 +100,36 @@ public class SearchActivity extends Activity {
             postsForView = postInfoArrayList;
         }
         else {
-            postsForView = new ArrayList<>();
+            ArrayList<PostInfo> newList = new ArrayList<>();
             for (PostInfo p : postInfoArrayList) {
                 if (p.getTitle().contains(searchFilter)) {
-                    addPostForView(p, false);
+                    newList.add(p);
                 }
             }
+            postsForView.clear();
+            postsForView.addAll(newList);
         }
         Collections.sort(postsForView);
-        recyclerViewAdapter.notifyItemRangeChanged(0, previousSize-1);
-        if (postsForView.size() > previousSize-1) {
-            recyclerViewAdapter.notifyItemRangeInserted(previousSize,
-                    postsForView.size()-1);
-        }
+//        if (postsForView.size() < previousSize) {
+//            recyclerViewAdapter.notifyItemRangeChanged(0,
+//                    postsForView.size() - 1);
+//            recyclerViewAdapter.notifyItemRangeRemoved(postsForView.size(),
+//                    previousSize - 1);
+//        }
+//        else {
+//            recyclerViewAdapter.notifyItemRangeChanged(0, previousSize - 1);
+//        }
+//        if (postsForView.size() > previousSize) {
+//            recyclerViewAdapter.notifyItemRangeInserted(previousSize,
+//                    postsForView.size()-1);
+//        }
+        recyclerViewAdapter.notifyDataSetChanged();
     }
 
     private void addPostForView(PostInfo post, boolean sort) {
         if (searchFilter == null || post.getTitle().contains(searchFilter)) {
             postsForView.add(post);
+            System.out.println("Got to here");
             if (sort) {
                 Collections.sort(postsForView);
             }
