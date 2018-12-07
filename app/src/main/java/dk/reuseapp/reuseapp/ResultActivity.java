@@ -36,7 +36,7 @@ public class ResultActivity extends FragmentActivity implements OnMapReadyCallba
 
         Intent intent = getIntent();
         post = (PostInfo) intent.getSerializableExtra("PostInfo");
-        if (visit > post.id && visit - post.id < 5000) {
+        if (visit > post.id && visit - post.id < 4000) {
             creator = true;
         }
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -51,7 +51,6 @@ public class ResultActivity extends FragmentActivity implements OnMapReadyCallba
         RequestOptions options= new RequestOptions();
         options.centerCrop();
         Glide.with(this).load(post.getPicture()).apply(options).into(imageView);
-
     }
 
     @Override
@@ -66,7 +65,8 @@ public class ResultActivity extends FragmentActivity implements OnMapReadyCallba
 
     /**
      * When back is pressed by the creator (just after publishing) the back stack is popped.
-     * Otherwise behaviour is normal.
+     * Otherwise behaviour is normal. This is of course a heuristic solution, but it should work
+     * virtually all the time and when it doesn't it isn't critical.
      */
     @Override
     public void onBackPressed() {
