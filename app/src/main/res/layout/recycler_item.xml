@@ -1,82 +1,108 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/postcontainer"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="101dp"
     android:layout_alignParentStart="true"
     android:layout_alignParentTop="true"
-    android:layout_marginTop="0dp">
+    android:layout_marginTop="0dp"
+    android:orientation="vertical">
+
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="100dp"
+        android:id="@+id/postcontainer"
+        android:layout_width="match_parent"
         android:layout_height="100dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp"
-        android:orientation="vertical">
+        android:layout_marginTop="0dp">
 
-        <TextView
-            android:id="@+id/titleid"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/descriptionid"
-            android:layout_width="91dp"
-            android:layout_height="50dp"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="0dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/titleid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/roboto_bold"
+                android:textSize="15sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/descriptionid"
+                android:layout_width="91dp"
+                android:layout_height="50dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:background="#0000"
+                android:fontFamily="@font/roboto_regular"
+                android:textAppearance="@style/TextAppearance.AppCompat"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/titleid"
+                tools:layout_editor_absoluteX="8dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/dateid"
+            android:layout_width="112dp"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
-            android:layout_marginTop="4dp"
-            android:background="#0000"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:fontFamily="@font/roboto_bold"
+            android:paddingStart="30dp"
+            android:text="TextView"
             android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleid"
-            tools:layout_editor_absoluteX="8dp" />
+            app:layout_constraintEnd_toStartOf="@+id/pictureID"
+            app:layout_constraintHorizontal_bias="0.509"
+            app:layout_constraintStart_toEndOf="@+id/descriptionid"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <ImageView
+            android:id="@+id/pictureID"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@+id/dateid"
+            android:layout_weight="1"
+            android:paddingLeft="10dp"
+            android:scaleType="centerCrop"
+            android:text="TextView"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/dateid"
-        android:layout_width="112dp"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
+    <SurfaceView
+        android:id="@+id/surfaceView2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
         android:layout_weight="1"
-        android:paddingStart="30dp"
-        android:text="TextView"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/pictureID"
-        app:layout_constraintHorizontal_bias="0.509"
-        app:layout_constraintStart_toEndOf="@+id/descriptionid"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <ImageView
-        android:id="@+id/pictureID"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:layout_marginTop="2dp"
-        android:layout_toEndOf="@+id/dateid"
-        android:layout_weight="1"
-        android:paddingLeft="10dp"
-        android:scaleType="centerCrop"
-        android:text="TextView"
-        android:textColor="@android:color/white"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        android:background="@android:color/black" />
 </LinearLayout>
 
 

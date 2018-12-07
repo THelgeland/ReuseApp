@@ -41,6 +41,8 @@
         android:textColorLink="@color/colorPrimary"
         app:layout_constraintTop_toBottomOf="@+id/postcontainerTitleID"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="20sp"
+        android:fontFamily="@font/roboto_regular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
