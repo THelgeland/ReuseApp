@@ -139,11 +139,11 @@ public class SearchActivity extends Activity {
     }
 
     private float getMaxDistance(int progress) {
-        return (float) (0.5 + 0.5 * progress);
+        return (float) (0.5 * progress);
     }
 
     private void setDistanceView(int progress) {
-        if (progress == 19) {
+        if (progress == 0) {
             distanceView.setText(context.getString(R.string.infinity) +" KM");
             applyFilters();
             maxDistance = 0;
