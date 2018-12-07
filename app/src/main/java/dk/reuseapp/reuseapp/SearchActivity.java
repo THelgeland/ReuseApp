@@ -1,9 +1,14 @@
 package dk.reuseapp.reuseapp;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
@@ -13,6 +18,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,13 +41,30 @@ public class SearchActivity extends Activity {
     private RecyclerView.LayoutManager layoutManager;
     private String searchFilter;
     private SeekBar geoSlider;
-    private TextView maxDistance;
+    private float maxDistance;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationCallback locationCallback;
+    private Location lastLocation;
+    private TextView distanceView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         fdatabase = FirebaseDatabase.getInstance().getReference().child("Post");
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null || locationResult.getLocations().size() == 0) {
+                    return;
+                }
+                else {
+                    lastLocation = locationResult.getLastLocation();
+                    fusedLocationProviderClient.removeLocationUpdates(this);
+                }
+            }
+        };
         final SearchView searchView = findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -50,7 +77,7 @@ public class SearchActivity extends Activity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 searchFilter = newText;
-                applyFilter();
+                applyFilters();
                 return false;
             }
         });
@@ -69,7 +96,8 @@ public class SearchActivity extends Activity {
         postsForView = new ArrayList<>();
         getAllPosts();
 
-        maxDistance = findViewById(R.id.distanceView);
+        distanceView = findViewById(R.id.distanceView);
+
         setDistanceView(0);
         geoSlider = findViewById(R.id.slider);
         geoSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -88,13 +116,40 @@ public class SearchActivity extends Activity {
                 ;
             }
         });
+        applyFilters();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ContextCompat.checkSelfPermission(SearchActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 225);
+        }
+        LocationRequest locationRequest  = LocationRequest.create()
+                .setNumUpdates(1)
+                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setInterval(0);
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback,
+                null);
+    }
+
+    private float getMaxDistance(int progress) {
+        return (float) (0.5 * progress);
     }
 
     private void setDistanceView(int progress) {
-        double max = 0.5 + 0.5 * progress;
-        String distance = max + " km";
-        maxDistance.setText(distance);
-        applyDistanceFilter(max);
+        if (progress == 0) {
+            distanceView.setText("ANY");
+            applyFilters();
+            maxDistance = 0;
+            return;
+        }
+        String distanceText = getMaxDistance(progress) + " KM";
+        distanceView.setText(distanceText);
+        maxDistance = getMaxDistance(progress)*1000;
+        applyFilters();
     }
 
     public void getAllPosts(){
@@ -135,41 +190,33 @@ public class SearchActivity extends Activity {
         setUpRecyclerView();
     }
 
-    private void applyDistanceFilter(double distance) {
-        ;
+    private boolean checkDistance(PostInfo postInfo) {
+        if (lastLocation == null || distanceView.getText().toString().equals("ANY")) {
+            return true;
+        }
+        return Util.parseLocation(postInfo.getLocation()).distanceTo(lastLocation) < maxDistance;
     }
 
-    private void applyFilter() {
-        //If there is no real search query we simply reset.
-        int previousSize = postsForView.size();
+    private boolean checkTitle(PostInfo postInfo) {
         if (searchFilter == null || searchFilter.equals("") || searchFilter.trim().equals("")) {
-            postsForView.clear();
-            postsForView.addAll(postInfoArrayList);
+            return true;
         }
         else {
-            ArrayList<PostInfo> newList = new ArrayList<>();
-            for (PostInfo p : postInfoArrayList) {
-                if (p.getTitle().contains(searchFilter)) {
-                    newList.add(p);
-                }
-            }
-            postsForView.clear();
-            postsForView.addAll(newList);
-            Collections.sort(postsForView);
+            return postInfo.getTitle().contains(searchFilter);
         }
-//        if (postsForView.size() < previousSize) {
-//            recyclerViewAdapter.notifyItemRangeChanged(0,
-//                    postsForView.size() - 1);
-//            recyclerViewAdapter.notifyItemRangeRemoved(postsForView.size(),
-//                    previousSize - 1);
-//        }
-//        else {
-//            recyclerViewAdapter.notifyItemRangeChanged(0, previousSize - 1);
-//        }
-//        if (postsForView.size() > previousSize) {
-//            recyclerViewAdapter.notifyItemRangeInserted(previousSize,
-//                    postsForView.size()-1);
-//        }
+    }
+
+    private void applyFilters() {
+        ArrayList<PostInfo> newList = new ArrayList<>();
+        for (PostInfo p : postInfoArrayList) {
+            if (checkTitle(p) && checkDistance(p)) {
+                newList.add(p);
+            }
+        }
+        postsForView.clear();
+        postsForView.addAll(newList);
+        Collections.sort(postsForView);
+
         recyclerViewAdapter.notifyDataSetChanged();
     }
 

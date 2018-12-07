@@ -16,6 +16,21 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:id="@+id/postcontainerTitleID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="1dp"
+        android:text="TitleView"
+        android:gravity="center"
+        android:textColorHighlight="@color/colorPrimary"
+        android:textColorHint="@color/colorPrimary"
+        android:textColorLink="@color/colorPrimary"
+        app:layout_constraintTop_toBottomOf="@+id/picturecontainerID"
+        app:layout_constraintBottom_toTopOf="@+id/postcontainerDescriptionID"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
         android:id="@+id/postcontainerDescriptionID"
         android:layout_width="0dp"
         android:layout_height="298dp"
@@ -24,6 +39,7 @@
         android:textColorHighlight="@color/colorPrimary"
         android:textColorHint="@color/colorPrimary"
         android:textColorLink="@color/colorPrimary"
+        app:layout_constraintTop_toBottomOf="@+id/postcontainerTitleID"
         app:layout_constraintBottom_toBottomOf="parent"
         android:textSize="20sp"
         android:fontFamily="@font/roboto_regular"
@@ -41,10 +57,10 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
-    <ImageView
+    <fragment
         android:id="@+id/googleMapsID"
         android:layout_width="0dp"
-        android:layout_height="222dp"
+        android:layout_height="218dp"
         android:layout_marginStart="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/picturecontainerID"
