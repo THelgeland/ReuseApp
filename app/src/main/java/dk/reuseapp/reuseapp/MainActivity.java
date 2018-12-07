@@ -59,11 +59,6 @@ public class MainActivity extends Activity {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(MainActivity.this,
-                            new String[]{Manifest.permission.CAMERA}, 225);
-                }
                 //Clicking the upload button starts the upload activity
                 Intent intent = new Intent(MainActivity.this, CameraActivity.class);
                 startActivity(intent);
@@ -74,10 +69,16 @@ public class MainActivity extends Activity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 225);
         }
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.CAMERA}, 225);
+        }
         final LocationManager locationManager =
                 (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            Toast.makeText(this, "Please turn on your GPS", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please turn on location services",
+                    Toast.LENGTH_LONG).show();
         }
     }
 }
