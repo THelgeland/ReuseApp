@@ -55,7 +55,8 @@
             android:label="Post"
             android:configChanges="orientation|screenSize"/>
         <activity android:name=".ResultActivity"
-            android:label="Result"/>
+            android:label="Result"
+            android:configChanges="orientation|screenSize"/>
     </application>
 
 </manifest>

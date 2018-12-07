@@ -26,14 +26,19 @@ import com.google.android.gms.maps.SupportMapFragment;
 public class ResultActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap map;
     private PostInfo post;
+    private boolean creator;
 
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.post_container);
+        long visit = System.currentTimeMillis();
 
         Intent intent = getIntent();
         post = (PostInfo) intent.getSerializableExtra("PostInfo");
+        if (visit > post.id && visit - post.id < 5000) {
+            creator = true;
+        }
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.googleMapsID);
         mapFragment.getMapAsync(this);
@@ -57,5 +62,21 @@ public class ResultActivity extends FragmentActivity implements OnMapReadyCallba
         LatLng postLatLng = new LatLng(postLocation.getLatitude(), postLocation.getLongitude());
         map.addMarker(new MarkerOptions().position(postLatLng).title("Post Position"));
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(postLatLng,17.0f));
+    }
+
+    /**
+     * When back is pressed by the creator (just after publishing) the back stack is popped.
+     * Otherwise behaviour is normal.
+     */
+    @Override
+    public void onBackPressed() {
+        if (creator) {
+            Intent intent = new Intent(ResultActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 }
