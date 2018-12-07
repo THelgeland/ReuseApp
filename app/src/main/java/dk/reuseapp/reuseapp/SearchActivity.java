@@ -2,6 +2,7 @@ package dk.reuseapp.reuseapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -46,11 +47,13 @@ public class SearchActivity extends Activity {
     private LocationCallback locationCallback;
     private Location lastLocation;
     private TextView distanceView;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        context = this;
         fdatabase = FirebaseDatabase.getInstance().getReference().child("Post");
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         locationCallback = new LocationCallback() {
@@ -141,7 +144,7 @@ public class SearchActivity extends Activity {
 
     private void setDistanceView(int progress) {
         if (progress == 0) {
-            distanceView.setText("ANY");
+            distanceView.setText(context.getString(R.string.infinity) +" KM");
             applyFilters();
             maxDistance = 0;
             return;
@@ -191,7 +194,7 @@ public class SearchActivity extends Activity {
     }
 
     private boolean checkDistance(PostInfo postInfo) {
-        if (lastLocation == null || distanceView.getText().toString().equals("ANY")) {
+        if (lastLocation == null || distanceView.getText().toString().equals(context.getString(R.string.infinity) +" KM")) {
             return true;
         }
         return Util.parseLocation(postInfo.getLocation()).distanceTo(lastLocation) < maxDistance;
