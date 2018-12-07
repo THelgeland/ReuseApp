@@ -41,7 +41,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
     @Override
     public void onBindViewHolder(@NonNull final RecyclerViewHolder recyclerViewHolder, int i) {
         final PostInfo postInfo = postInfoArrayList.get(i);
-        recyclerViewHolder.description.setText(postInfo.getDescription());
         recyclerViewHolder.date.setText(postInfo.getDate());
 
         RequestOptions options = new RequestOptions();
@@ -89,7 +88,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
 
 
     static class RecyclerViewHolder extends RecyclerView.ViewHolder{
-        private TextView description;
         private TextView date;
         private ImageView picture;
         private LinearLayout postcontainer;
@@ -97,7 +95,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
 
         RecyclerViewHolder(View view){
             super(view);
-            description=view.findViewById(R.id.descriptionid);
             date=view.findViewById(R.id.dateid);
             picture=view.findViewById(R.id.pictureID);
             title=view.findViewById(R.id.titleid);
