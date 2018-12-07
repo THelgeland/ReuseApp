@@ -1,6 +1,7 @@
 package dk.reuseapp.reuseapp;
 
 import android.hardware.Camera;
+import android.location.Location;
 import android.os.Environment;
 
 import java.io.File;
@@ -12,6 +13,14 @@ import java.io.File;
  * @author Henrik Tran
  */
 public class Util {
+
+    public static Location parseLocation(String location) {
+        Location result = new Location("");
+        String[] coordinates = location.split(";");
+        result.setLatitude(Double.parseDouble(coordinates[0]));
+        result.setLongitude(Double.parseDouble(coordinates[1]));
+        return result;
+    }
 //    /**
 //     * Opens a camera
 //     * @param id an id specifying which camera to use - we always use the back camera 0, but using

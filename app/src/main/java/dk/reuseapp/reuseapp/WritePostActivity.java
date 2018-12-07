@@ -22,6 +22,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -63,6 +66,8 @@ public class WritePostActivity extends Activity {
     private FirebaseAuth fauth;
     private Bitmap image;
     private FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationCallback locationCallback;
+    private Location lastLocation;
 
     @Override
     protected void onCreate(Bundle bundle) {
@@ -72,6 +77,18 @@ public class WritePostActivity extends Activity {
         fdatabase=FirebaseDatabase.getInstance().getReference();
         fauth = FirebaseAuth.getInstance();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null || locationResult.getLocations().size() == 0) {
+                    return;
+                }
+                else {
+                    lastLocation = locationResult.getLastLocation();
+                    fusedLocationProviderClient.removeLocationUpdates(this);
+                }
+            }
+        };
 
         final EditText title = findViewById(R.id.title_field);
         final EditText description = findViewById(R.id.description_field);
@@ -110,6 +127,22 @@ public class WritePostActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (ContextCompat.checkSelfPermission(WritePostActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 225);
+        }
+        LocationRequest locationRequest  = LocationRequest.create()
+                .setNumUpdates(1)
+                .setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
+                .setInterval(0);
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback,
+                null);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == 1) {
             Bundle extras = data.getExtras();
@@ -125,26 +158,16 @@ public class WritePostActivity extends Activity {
     }
     public String getDate(){
         Date c = Calendar.getInstance().getTime();
-        System.out.println("Current date"+c);
         SimpleDateFormat df= new SimpleDateFormat("dd/MM/yyyy");
         String formattedDate=df.format(c);
         return formattedDate;
     }
     public void upload(final String text, final String title){
-        final String[] locationString = new String[1];
-        if (ContextCompat.checkSelfPermission(WritePostActivity.this,
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 225);
+        if (lastLocation == null) {
+            Toast.makeText(WritePostActivity.this, "Couldn't find your location", Toast.LENGTH_LONG).show();
+            return;
         }
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    locationString[0] = location.getLatitude() + ";" + location.getLongitude();
-                }
-            }
-        });
+        final String locationString = lastLocation.getLatitude() + ";" + lastLocation.getLongitude();
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.PNG,100,baos);
@@ -170,7 +193,7 @@ public class WritePostActivity extends Activity {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
                     String downloadURL = downloadUri.toString();
-                    PostInfo testPost = new PostInfo(locationString[0], text, downloadURL, title, getDate());
+                    PostInfo testPost = new PostInfo(locationString, text, downloadURL, title, getDate());
                     Map<String, Object> postValues = testPost.toMap();
                     fdatabase.child("Post").child(System.currentTimeMillis() + "").updateChildren(postValues);
                 } else {
