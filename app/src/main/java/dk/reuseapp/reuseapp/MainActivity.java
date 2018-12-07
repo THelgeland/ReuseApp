@@ -57,6 +57,11 @@ public class MainActivity extends Activity {
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(MainActivity.this,
+                            new String[]{Manifest.permission.CAMERA}, 225);
+                }
                 //Clicking the upload button starts the upload activity
                 Intent intent = new Intent(MainActivity.this, CameraActivity.class);
                 startActivity(intent);
