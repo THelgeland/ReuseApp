@@ -12,59 +12,94 @@
         android:background="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <SurfaceView
+        android:id="@+id/surfaceView4"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postcontainer"
+        app:layout_constraintVertical_weight="1" />
 
     <TextView
         android:id="@+id/postcontainerTitleID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="1dp"
-        android:text="TitleView"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/roboto_bold"
         android:gravity="center"
+        android:text="TitleView"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         android:textColorHighlight="@color/colorPrimary"
         android:textColorHint="@color/colorPrimary"
         android:textColorLink="@color/colorPrimary"
-        app:layout_constraintTop_toBottomOf="@+id/picturecontainerID"
-        app:layout_constraintBottom_toTopOf="@+id/postcontainerDescriptionID"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/surfaceView4" />
 
     <TextView
         android:id="@+id/postcontainerDescriptionID"
         android:layout_width="0dp"
-        android:layout_height="298dp"
-        android:layout_marginBottom="1dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="84dp"
+        android:fontFamily="@font/roboto_regular"
+        android:textAppearance="@style/TextAppearance.AppCompat"
         android:text="TextView"
         android:textColorHighlight="@color/colorPrimary"
         android:textColorHint="@color/colorPrimary"
         android:textColorLink="@color/colorPrimary"
-        app:layout_constraintTop_toBottomOf="@+id/postcontainerTitleID"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:textSize="20sp"
-        android:fontFamily="@font/roboto_regular"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/picturecontainerID"
-        android:layout_width="190dp"
-        android:layout_height="218dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toStartOf="@+id/postcontainerDescriptionID"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        app:layout_constraintTop_toBottomOf="@+id/postcontainerTitleID" />
 
-    <fragment
-        android:id="@+id/googleMapsID"
-        android:layout_width="0dp"
-        android:layout_height="218dp"
-        android:layout_marginStart="8dp"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/postcontainer"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/picturecontainerID"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:context=".ResultActivity"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <ImageView
+            android:id="@+id/picturecontainerID"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:background="#ff0000">
+
+            <fragment
+                android:id="@+id/googleMapsID"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".ResultActivity" />
+        </RelativeLayout>
+
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

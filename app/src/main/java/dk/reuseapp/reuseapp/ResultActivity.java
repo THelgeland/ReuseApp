@@ -1,13 +1,18 @@
 package dk.reuseapp.reuseapp;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -16,6 +21,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.gms.maps.SupportMapFragment;
+
 
 public class ResultActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap map;
@@ -35,6 +41,12 @@ public class ResultActivity extends FragmentActivity implements OnMapReadyCallba
         titleView.setText(post.getTitle());
         TextView descView = findViewById(R.id.postcontainerDescriptionID);
         descView.setText(post.getDescription());
+        ImageView imageView =findViewById(R.id.picturecontainerID);
+        Glide.with(this).load(post.getPicture()).into(imageView);
+        RequestOptions options= new RequestOptions();
+        options.centerCrop();
+        Glide.with(this).load(post.getPicture()).apply(options).into(imageView);
+
     }
 
     @Override
