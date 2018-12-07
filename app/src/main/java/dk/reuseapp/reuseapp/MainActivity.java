@@ -39,14 +39,11 @@ import java.util.UUID;
 public class MainActivity extends Activity {
     private ImageButton searchButton;
     private ImageButton uploadButton;
-    private DatabaseReference fdatabase;
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        fdatabase=FirebaseDatabase.getInstance().getReference();
         searchButton = findViewById(R.id.searchButton);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +58,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //Clicking the upload button starts the upload activity
-                Intent intent = new Intent(MainActivity.this, WritePostActivity.class);
+                Intent intent = new Intent(MainActivity.this, CameraActivity.class);
                 startActivity(intent);
             }
         });

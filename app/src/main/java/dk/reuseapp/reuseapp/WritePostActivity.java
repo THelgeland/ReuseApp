@@ -2,6 +2,7 @@ package dk.reuseapp.reuseapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -64,16 +65,20 @@ public class WritePostActivity extends Activity {
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private DatabaseReference fdatabase;
     private FirebaseAuth fauth;
-    private Bitmap image;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
     private Location lastLocation;
+    private Context context;
+    private Bitmap image;
 
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+        Intent intent = getIntent();
+        image = intent.getExtras().getParcelable("data");
+
         setContentView(R.layout.activity_write_post);
-        startTakePictureIntent();
+        context = this;
         fdatabase=FirebaseDatabase.getInstance().getReference();
         fauth = FirebaseAuth.getInstance();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -142,20 +147,12 @@ public class WritePostActivity extends Activity {
                 null);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == 1) {
-            Bundle extras = data.getExtras();
-            image = (Bitmap) extras.get("data");
-        }
-    }
+    /*@Override
+    protected void onSaveInstanceState(Bundle bundleToSave) {
+        super.onSaveInstanceState(bundleToSave);
+        bundleToSave.putParcelable("data", image);
+    }*/
 
-    private void startTakePictureIntent() {
-        Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (pictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(pictureIntent, 1);
-        }
-    }
     public String getDate(){
         Date c = Calendar.getInstance().getTime();
         SimpleDateFormat df= new SimpleDateFormat("dd/MM/yyyy");
@@ -193,9 +190,15 @@ public class WritePostActivity extends Activity {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
                     String downloadURL = downloadUri.toString();
-                    PostInfo testPost = new PostInfo(locationString, text, downloadURL, title, getDate());
-                    Map<String, Object> postValues = testPost.toMap();
-                    fdatabase.child("Post").child(System.currentTimeMillis() + "").updateChildren(postValues);
+                    long timeInMillis = System.currentTimeMillis();
+                    PostInfo postToSend = new PostInfo(locationString, text, downloadURL, title, getDate());
+                    postToSend.id = timeInMillis;
+                    Map<String, Object> postValues = postToSend.toMap();
+                    fdatabase.child("Post").child(timeInMillis + "").updateChildren(postValues);
+                    Intent intent = new Intent(context, ResultActivity.class);
+                    intent.putExtra("PostInfo", postToSend);
+                    context.startActivity(intent);
+
                 } else {
                     // Handle errors
                 }
