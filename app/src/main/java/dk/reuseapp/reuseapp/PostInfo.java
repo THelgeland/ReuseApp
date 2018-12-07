@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import java.util.Map;
  *
  * @author Henrik Tran
  */
-public class PostInfo implements Comparable {
+public class PostInfo implements Comparable, Serializable {
     //private FirebaseDatabase storage = FirebaseStorage.getInstance();
     public String location;
     public String description;

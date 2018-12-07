@@ -40,7 +40,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerViewHolder recyclerViewHolder, int i) {
-        PostInfo postInfo = postInfoArrayList.get(i);
+        final PostInfo postInfo = postInfoArrayList.get(i);
         recyclerViewHolder.description.setText(postInfo.getDescription());
         recyclerViewHolder.date.setText(postInfo.getDate());
 
@@ -52,7 +52,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
         recyclerViewHolder.postcontainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog nagDialog = new Dialog(context,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                Intent intent = new Intent(context, ResultActivity.class);
+                intent.putExtra("PostInfo", postInfo);
+                context.startActivity(intent);
+                /*final Dialog nagDialog = new Dialog(context,android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 nagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 nagDialog.setCancelable((false));
                 nagDialog.setContentView(R.layout.post_container);
@@ -74,11 +77,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter <RecyclerViewAdapt
                         }
                         return true;
                     }
-                });
-
-
-
-
+                });*/
             }
         });
     }
