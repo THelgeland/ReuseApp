@@ -53,14 +53,12 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * This activity is for writing a title and description for the post.
+ * This activity is for writing a title and description for the post. It also uploads the post
+ * with the user location.
  *
  * @author Torkil Helgeland
  */
 
-//TODO: Write description to file as well, figure out a suitable data model.
-
-//TODO: Modify the back stack when pressing 'Post'
 public class WritePostActivity extends Activity {
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private DatabaseReference fdatabase;

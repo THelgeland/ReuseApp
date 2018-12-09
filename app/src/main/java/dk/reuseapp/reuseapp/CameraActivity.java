@@ -6,6 +6,12 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
 
+
+/**
+ * Activity simply for making implicit intent call to camera app
+ *
+ * @author Torkil Helgeland
+ */
 public class CameraActivity extends Activity {
     @Override
     protected void onCreate(Bundle bundle) {

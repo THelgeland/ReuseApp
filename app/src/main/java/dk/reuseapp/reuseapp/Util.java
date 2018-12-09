@@ -5,6 +5,9 @@ import android.location.Location;
 import android.os.Environment;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Utility file for providing static methods that are to be used in several different classes.
@@ -20,6 +23,13 @@ public class Util {
         result.setLatitude(Double.parseDouble(coordinates[0]));
         result.setLongitude(Double.parseDouble(coordinates[1]));
         return result;
+    }
+
+    public static String getDate(long milliSeconds) {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+        formatter.setTimeZone(TimeZone.getTimeZone("Europe/Copenhagen"));
+        String dateString = formatter.format(new Date(milliSeconds));
+        return dateString;
     }
 //    /**
 //     * Opens a camera

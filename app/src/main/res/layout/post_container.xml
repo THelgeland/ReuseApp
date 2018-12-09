@@ -46,25 +46,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/surfaceView4" />
 
-    <TextView
-        android:id="@+id/postcontainerDescriptionID"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="84dp"
-        android:fontFamily="@font/roboto_regular"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:text="TextView"
-        android:textColorHighlight="@color/colorPrimary"
-        android:textColorHint="@color/colorPrimary"
-        android:textColorLink="@color/colorPrimary"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/postcontainerDateView"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/postcontainerTitleID" />
+        app:layout_constraintTop_toBottomOf="@+id/postcontainerTitleID">
+
+        <TextView
+            android:id="@+id/postcontainerDescriptionID"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="84dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="TextView"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            android:textColorHighlight="@color/colorPrimary"
+            android:textColorHint="@color/colorPrimary"
+            android:textColorLink="@color/colorPrimary"
+            android:textSize="20sp" />
+
+        <ImageButton
+            android:id="@+id/deletePostButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/ic_menu_delete"
+            android:layout_gravity="bottom|right"
+            android:visibility="gone"/>
+    </FrameLayout>
+
+
+    <TextView
+        android:id="@+id/postcontainerDateView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="date"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"

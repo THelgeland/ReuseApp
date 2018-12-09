@@ -33,6 +33,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 import java.util.Collections;
 
+
+/**
+ * Activity for displaying search results and filtering them
+ *
+ * @author Torkil Helgeland
+ * @author Henrik Tran
+ */
 public class SearchActivity extends Activity {
     private ArrayList<PostInfo> postInfoArrayList;
     private ArrayList<PostInfo> postsForView;
@@ -101,8 +108,9 @@ public class SearchActivity extends Activity {
 
         distanceView = findViewById(R.id.distanceView);
 
-        setDistanceView(0);
+        setDistanceView(19);
         geoSlider = findViewById(R.id.slider);
+        geoSlider.setProgress(19);
         geoSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -119,7 +127,6 @@ public class SearchActivity extends Activity {
                 ;
             }
         });
-        applyFilters();
     }
 
     @Override
@@ -139,11 +146,11 @@ public class SearchActivity extends Activity {
     }
 
     private float getMaxDistance(int progress) {
-        return (float) (0.5 * progress);
+        return (float) (0.5 + 0.5 * progress);
     }
 
     private void setDistanceView(int progress) {
-        if (progress == 0) {
+        if (progress == 19) {
             distanceView.setText(context.getString(R.string.infinity) +" KM");
             applyFilters();
             maxDistance = 0;
@@ -176,7 +183,18 @@ public class SearchActivity extends Activity {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+                long id = Long.parseLong(dataSnapshot.getKey());
+                for (int i = 0; i < postsForView.size(); i++) {
+                    if (postsForView.get(i).id == id) {
+                        postsForView.remove(postsForView.get(i));
+                        recyclerViewAdapter.notifyItemRemoved(i);
+                    }
+                }
+                for (int i = 0; i < postInfoArrayList.size(); i++) {
+                    if (postInfoArrayList.get(i).id == id) {
+                        postInfoArrayList.remove(postInfoArrayList.get(i));
+                    }
+                }
             }
 
             @Override
@@ -205,7 +223,7 @@ public class SearchActivity extends Activity {
             return true;
         }
         else {
-            return postInfo.getTitle().contains(searchFilter);
+            return postInfo.getTitle().toLowerCase().contains(searchFilter.toLowerCase());
         }
     }
 

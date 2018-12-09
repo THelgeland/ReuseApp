@@ -2,8 +2,10 @@ package dk.reuseapp.reuseapp;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,6 +14,8 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,8 +35,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-
+/**
+ * Activity for displaying, finding and deleting posts.
+ *
+ * @author Torkil Helgeland
+ */
 public class ResultActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap map;
     private PostInfo post;
@@ -41,12 +51,15 @@ public class ResultActivity extends FragmentActivity implements OnMapReadyCallba
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationCallback locationCallback;
     private Location lastLocation;
+    private ImageButton deleteButton;
+    private DatabaseReference fdatabase;
 
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.post_container);
         long visit = System.currentTimeMillis();
+        fdatabase=FirebaseDatabase.getInstance().getReference();
 
         Intent intent = getIntent();
         post = (PostInfo) intent.getSerializableExtra("PostInfo");
@@ -62,7 +75,7 @@ public class ResultActivity extends FragmentActivity implements OnMapReadyCallba
                 }
                 else {
                     lastLocation = locationResult.getLastLocation();
-                    if (lastLocation.distanceTo(Util.parseLocation(post.getLocation())) < 50) {
+                    if (lastLocation != null && lastLocation.distanceTo(Util.parseLocation(post.getLocation())) < 50) {
                         owner = true;
                     }
                     else {
@@ -80,6 +93,34 @@ public class ResultActivity extends FragmentActivity implements OnMapReadyCallba
         TextView descView = findViewById(R.id.postcontainerDescriptionID);
         descView.setText(post.getDescription());
         ImageView imageView =findViewById(R.id.picturecontainerID);
+        TextView dateView = findViewById(R.id.postcontainerDateView);
+        dateView.setText("Uploaded "+Util.getDate(post.id));
+        deleteButton = findViewById(R.id.deletePostButton);
+
+        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        fdatabase.child("Post").child(post.id + "").removeValue();
+                        onBackPressed();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //Do nothing
+                        break;
+                }
+            }
+        };
+
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ResultActivity.this);
+                builder.setMessage("Do you want to delete the post?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+            }
+        });
         Glide.with(this).load(post.getPicture()).into(imageView);
         RequestOptions options= new RequestOptions();
         options.centerCrop();
@@ -88,7 +129,10 @@ public class ResultActivity extends FragmentActivity implements OnMapReadyCallba
 
     private void updateView() {
         if (owner) {
-            Toast.makeText(ResultActivity.this, "You own this", Toast.LENGTH_LONG).show();
+            deleteButton.setVisibility(View.VISIBLE);
+        }
+        else {
+            deleteButton.setVisibility(View.GONE);
         }
     }
 
@@ -115,7 +159,7 @@ public class ResultActivity extends FragmentActivity implements OnMapReadyCallba
         Location postLocation = Util.parseLocation(post.getLocation());
         LatLng postLatLng = new LatLng(postLocation.getLatitude(), postLocation.getLongitude());
         map.addMarker(new MarkerOptions().position(postLatLng).title("Post Position"));
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(postLatLng,17.0f));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(postLatLng,13.0f));
     }
 
     /**
